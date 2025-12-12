@@ -327,7 +327,7 @@ button.secondary { background: #95a5a6; box-shadow: 0 4px 0 #7f8c8d; }
     /* 3. マーク（ピップ）自体のサイズを少し抑える */
     /* 2.0emだとスマホでは大きいので 1.6em 程度に */
     .pip {
-        font-size: 1.3em;
+        font-size: 1.5em;
         line-height: 0.8;
     }
 
