@@ -86,17 +86,7 @@ h1 { font-size: 1.8rem; text-align: center; margin: 0; }
     color: var(--color-black);
 }
 
-.cell .card {
-    position: absolute; 
-    top: 0; 
-    left: 0;
-    
-    /* ★重要★ 
-       盤面内のカード文字サイズを画面幅に合わせて可変にする 
-       スマホ(幅300px〜)では約7px〜、PCでは10px程度になる計算です
-    */
-    font-size: clamp(6px, 2.5vw, 11px);
-}
+.cell .card { position: absolute; top: 0; left: 0; }
 
 /* プレビューカード（少し大きく表示） */
 .card-preview {
@@ -157,14 +147,12 @@ h1 { font-size: 1.8rem; text-align: center; margin: 0; }
 
 /* === ピップ配置システム (Flex/Grid) === */
 .pip-container {
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     
-    /* 変更: 左右の余白を減らして、描画領域を広げる */
-    padding: 0 2%;  /* 元は padding: 0 10% とかでした */
-    
+    /* カードの端ギリギリにならないよう左右に余白を入れる */
+    padding: 0 10%; 
     box-sizing: border-box;
 }
 
@@ -180,11 +168,10 @@ h1 { font-size: 1.8rem; text-align: center; margin: 0; }
     justify-content: space-evenly;
 }
 
-/* .pip のサイズを少しだけ小さくして重なりを防ぐ */
+/* マーク単体 */
 .pip {
-    /* 変更: 2.0em -> 1.7em くらいに縮小 */
-    font-size: 1.7em; 
-    line-height: 0.85;
+    font-size: 2.0em;
+    line-height: 0.8;
     display: block;
 }
 .pip.rotated { transform: rotate(180deg); }
@@ -318,4 +305,40 @@ button.secondary { background: #95a5a6; box-shadow: 0 4px 0 #7f8c8d; }
     animation: eliminateEffect 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
     z-index: 100; /* 隣のカードより手前に表示 */
     pointer-events: none; /* クリック不可にする */
+}
+
+/* =========================================
+   スマホ用レスポンシブ調整 (600px以下のみ適用)
+   ========================================= */
+@media screen and (max-width: 600px) {
+
+    /* 1. カードの基準文字サイズを小さくする */
+    /* PCでは固定値や大きめの設定でも、スマホでは画面幅に合わせて縮小 */
+    .cell .card {
+        font-size: clamp(6px, 2.5vw, 9px); 
+    }
+
+    /* 2. スート配置エリアの左右の余白を極限まで減らす */
+    /* これで3列並んでも右にはみ出しにくくなります */
+    .pip-container {
+        padding: 0 2px; 
+    }
+
+    /* 3. マーク（ピップ）自体のサイズを少し抑える */
+    /* 2.0emだとスマホでは大きいので 1.6em 程度に */
+    .pip {
+        font-size: 1.3em;
+        line-height: 0.8;
+    }
+
+    /* 4. 隅の数字も少しだけ小さくして圧迫感を減らす */
+    .rank {
+        font-size: 1.0em;
+        letter-spacing: -0.05em;
+    }
+    
+    /* 隅のスートも微調整 */
+    .small-suit {
+        font-size: 1.0em;
+    }
 }
