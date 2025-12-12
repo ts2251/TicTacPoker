@@ -342,3 +342,15 @@ button.secondary { background: #95a5a6; box-shadow: 0 4px 0 #7f8c8d; }
         font-size: 1.0em;
     }
 }
+
+/* 黒スート(.suit-spade, .suit-club) かつ 
+   ランクが13(King) の場合、
+   中央の絵文字(.face-icon)を白黒にする 
+*/
+.card.suit-spade[data-rank="13"] .face-icon,
+.card.suit-club[data-rank="13"] .face-icon {
+    filter: grayscale(100%); /* 完全に色を抜く */
+    
+    /* もし「真っ黒」にしたい場合は以下を使ってください */
+    /* filter: brightness(0); */
+}

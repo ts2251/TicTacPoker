@@ -92,9 +92,9 @@ function createCardHTML(card) {
 
     const centerHtml = createCenterHTML(rank, suitChar);
     
-// ★変更: span class="rank" に ${rankModifierClass} を追加
+// ★変更箇所: classの横に data-rank="${rank}" を追加しました
     return `
-        <div class="card ${suitClass}">
+        <div class="card ${suitClass}" data-rank="${rank}">
             <div class="card-corner top-left">
                 <span class="rank ${rankModifierClass}">${rankStr}</span>
                 <span class="small-suit">${suitChar}</span>
