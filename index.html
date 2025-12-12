@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicTacPoker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <h1>TicTacPoker</h1>
+        <div class="info-panel">
+            <div class="score-box">SCORE<br><span id="score" class="score-val">0</span></div>
+            <div class="deck-box">DECK<br><span id="deck-count" class="score-val">0</span></div>
+        </div>
+        <div class="next-card-area">
+            <div class="next-card-label">NEXT</div>
+            <div id="next-card" class="card-preview">?</div>
+        </div>
+        <div id="board" class="game-board"></div>
+        <div class="controls">
+            <button id="btn-rules">ルール</button>
+            <button id="btn-reset" class="secondary">リセット</button>
+        </div>
+        <div id="game-log" class="log-area"></div>
+    </div>
+
+    <div id="rule-modal" class="modal">
+        <div class="modal-content">
+            <h2>ルールと役</h2>
+            <div id="rules-table-container"></div>
+            <button id="btn-close-rules" style="margin-top:15px;">閉じる</button>
+        </div>
+    </div>
+
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content game-over-content">
+            <h2 id="end-title" class="game-over-title">GAME SET</h2>
+            <div class="final-score-label">FINAL SCORE</div>
+            <span id="end-score" class="final-score-val">0</span>
+            <button id="btn-restart">もう一度遊ぶ</button>
+        </div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>

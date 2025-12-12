@@ -1,0 +1,308 @@
+:root {
+    /* 色設定 */
+    --bg-color: #f0f2f5;
+    --card-bg: #ffffff;
+    --highlight: #d35400;
+    --valid-spot: #27ae60;
+    --text-color: #2c3e50;
+    
+    --color-black: #2d2d2d;
+    --color-red: #d93030;
+    
+    --grid-gap: 6px;
+    
+    /* カードの基準フォントサイズ: 
+       これを変更するとカード内の要素が一括で拡大縮小します */
+    --card-font-base: 10px; 
+}
+
+/* 全体のレイアウト設定 */
+html, body {
+    margin: 0; padding: 0; width: 100%; min-height: 100vh;
+    font-family: "Segoe UI", sans-serif; /* フォント合わせ */
+    background-color: var(--bg-color); color: var(--text-color);
+}
+
+.app-container {
+    width: 100%; max-width: 400px; margin: 0 auto;
+    padding: 20px 15px 60px 15px; box-sizing: border-box;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 20px;
+}
+
+h1, .info-panel, .next-card-area, .game-board, .controls, .log-area {
+    width: 100%; flex-shrink: 0;
+}
+
+h1 { font-size: 1.8rem; text-align: center; margin: 0; }
+
+.info-panel {
+    display: flex; justify-content: space-around;
+    background: rgba(255,255,255,0.9); padding: 15px;
+    border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.score-box, .deck-box { text-align: center; }
+.score-val { font-size: 1.4rem; font-weight: bold; color: var(--highlight); display: block; margin-top: 5px; }
+
+/* --- NEXTカードエリア --- */
+.next-card-area {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 120px; 
+}
+.next-card-label { font-size: 0.9rem; margin-bottom: 10px; opacity: 0.8; font-weight: bold; }
+
+/* --- 盤面 --- */
+.game-board {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: var(--grid-gap); aspect-ratio: 1 / 1;
+}
+.cell {
+    background: rgba(0,0,0,0.05); border-radius: 0.8em;
+    position: relative; width: 100%; height: 100%;
+}
+.cell::before { content: ""; display: block; padding-top: 140%; }
+.cell.valid {
+    background: rgba(39, 174, 96, 0.2); border: 2px dashed var(--valid-spot); cursor: pointer;
+}
+
+/* =========================================
+   ここからカードのデザイン (テンプレート移植)
+   ========================================= */
+
+/* カードの基本設定 */
+.card-preview, .card {
+    /* コンテナサイズに合わせる */
+    width: 100%; height: 100%;
+    font-size: var(--card-font-base); /* 基準サイズ */
+    
+    background-color: var(--card-bg);
+    border-radius: 0.8em; /* 相対単位 */
+    box-shadow: 0 0.2em 0.5em rgba(0,0,0,0.2);
+    position: relative;
+    user-select: none;
+    overflow: hidden;
+    
+    /* 文字色デフォルト */
+    color: var(--color-black);
+}
+
+.cell .card { position: absolute; top: 0; left: 0; }
+
+/* プレビューカード（少し大きく表示） */
+.card-preview {
+    width: 60px; height: 84px;
+    flex: 0 0 84px;
+    display: inline-block;
+    font-size: 12px; /* プレビューは見やすく少し大きく */
+}
+.card-preview.empty {
+    background: transparent; border: 2px dashed rgba(0,0,0,0.2); box-shadow: none;
+}
+
+/* スートごとの色 */
+.card.suit-spade, .card.suit-club, .card.joker {
+    color: var(--color-black);
+}
+.card.suit-heart, .card.suit-diamond {
+    color: var(--color-red);
+}
+
+/* === 四隅のインデックス === */
+.card-corner {
+    position: absolute;
+    display: flex; flex-direction: column; align-items: center;
+    line-height: 1; padding: 0.3em; font-weight: bold;
+    z-index: 2;
+}
+.card-corner.top-left { top: 0; left: 0; }
+.card-corner.bottom-right { bottom: 0; right: 0; transform: rotate(180deg); }
+
+.rank { font-size: 1.5em; letter-spacing: -0.1em; }
+.small-suit { font-size: 1.2em; }
+
+/* ★追加: 10の時だけ少し小さく、文字間を詰める */
+.rank.rank-10 {
+    font-size: 1.1em;      /* 1.5em -> 1.1em に縮小 */
+    letter-spacing: -0.15em; /* 2桁なので少し詰める */
+}
+
+/* === Jokerの文字 === */
+.joker-text {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    font-size: 1.1em;
+    font-weight: bold;
+    letter-spacing: -0.15em;
+    margin: 0;
+}
+
+/* === 中央エリア === */
+.card-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%; height: 85%;
+    display: flex; justify-content: center; align-items: center;
+}
+
+/* === ピップ配置システム (Flex/Grid) === */
+.pip-container {
+    width: 100%; height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    
+    /* カードの端ギリギリにならないよう左右に余白を入れる */
+    padding: 0 10%; 
+    box-sizing: border-box;
+}
+
+.pip-column {
+    display: flex; flex-direction: column; align-items: center;
+}
+
+.pip-column:first-child, 
+.pip-column:last-child {
+    justify-content: space-between;
+}
+.pip-column:nth-child(2) {
+    justify-content: space-evenly;
+}
+
+/* マーク単体 */
+.pip {
+    font-size: 2.0em;
+    line-height: 0.8;
+    display: block;
+}
+.pip.rotated { transform: rotate(180deg); }
+
+/* A専用特大マーク */
+.pip-ace { font-size: 5em; line-height: 1; }
+
+/* 絵札アイコン */
+.face-icon {
+    font-size: 3.0em; line-height: 1;
+    color: currentColor;
+}
+
+/* =========================================
+   UIパーツ (ボタン等)
+   ========================================= */
+
+.controls { display: flex; gap: 15px; justify-content: center; margin-top: 10px; }
+button {
+    flex: 1; padding: 14px; border: none; border-radius: 8px;
+    background: #3498db; color: white; font-weight: bold; font-size: 1rem;
+    cursor: pointer; box-shadow: 0 4px 0 #2980b9;
+}
+button:hover { background: #2980b9; }
+button:active { transform: translateY(2px); box-shadow: 0 2px 0 #2980b9; }
+button.secondary { background: #95a5a6; box-shadow: 0 4px 0 #7f8c8d; }
+
+.log-area {
+    height: 120px; overflow-y: auto; background: rgba(255,255,255,0.8);
+    padding: 10px; font-size: 0.85rem; border-radius: 8px; border: 1px solid #ddd;
+    box-sizing: border-box;
+}
+.log-entry { margin-bottom: 5px; border-bottom: 1px solid #eee; }
+
+.combo-overlay {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+    color: #f1c40f; font-size: 3rem; font-weight: 900;
+    text-shadow: 0 0 10px #e74c3c, 0 0 20px #c0392b;
+    pointer-events: none; z-index: 200; white-space: nowrap;
+    opacity: 0; transition: all 0.3s;
+}
+.combo-overlay.show { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; justify-content: center; align-items: center; }
+.modal-content { background: #fff; color: #333; padding: 20px; border-radius: 10px; max-width: 90%; max-height: 80vh; overflow-y: auto; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+.modal-content table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9rem; }
+.modal-content th, .modal-content td { border: 1px solid #ddd; padding: 8px; }
+
+/* --- ゲームオーバー / クリア演出用モーダル --- */
+.game-over-content {
+    background: linear-gradient(135deg, #fff, #f0f0f0);
+    border: 4px solid var(--highlight);
+    text-align: center;
+    padding: 30px;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.game-over-title {
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+    color: var(--text-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.final-score-label { font-size: 1rem; color: #7f8c8d; }
+.final-score-val { 
+    font-size: 3rem; 
+    font-weight: 900; 
+    color: var(--highlight); 
+    display: block; 
+    margin: 10px 0 20px 0;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+#btn-restart {
+    font-size: 1.2rem;
+    padding: 15px 40px;
+    background: var(--valid-spot);
+    box-shadow: 0 4px 0 #1e8449;
+}
+#btn-restart:active { box-shadow: 0 2px 0 #1e8449; }
+
+/* style.css の末尾に追加 */
+
+.combo-overlay {
+    /* 既存設定の上書き・確認 */
+    line-height: 1.2;
+    white-space: normal; /* 改行を許可 */
+    text-align: center;
+}
+
+/* 長文（コンボ）用の縮小スタイル */
+.combo-overlay.long-text {
+    font-size: 1.8rem; /* 通常3remから縮小 */
+    text-shadow: 0 0 5px #e74c3c, 0 0 10px #c0392b; /* 読みやすさ重視で影を薄く */
+    background: rgba(0,0,0,0.7); /* 背景を少し暗くして文字を際立たせる */
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%; /* 画面幅いっぱいにならないように */
+}
+
+/* style.css の末尾に追加 */
+
+/* 消滅アニメーション定義 */
+@keyframes eliminateEffect {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+        opacity: 1;
+    }
+    30% {
+        /* 一瞬膨らんで光る */
+        transform: scale(1.1);
+        filter: brightness(2) drop-shadow(0 0 15px gold);
+        opacity: 1;
+    }
+    100% {
+        /* 縮小して消える */
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* アニメーション適用クラス */
+.card.eliminating {
+    animation: eliminateEffect 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+    z-index: 100; /* 隣のカードより手前に表示 */
+    pointer-events: none; /* クリック不可にする */
+}
